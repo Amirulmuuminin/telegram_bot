@@ -1,27 +1,43 @@
-import { Telegraf, Markup } from "telegraf";
-import { PrismaClient } from "@prisma/client";
+import { Markup, Scenes, session, Telegraf } from "telegraf";
 import { getAllKelas } from "./lib/kelas";
 
-const prisma = new PrismaClient();
+interface MyWizardSession extends Scenes.WizardSessionData {
+  // available in scene context under ctx.scene.session.kelas
+  kelas: string;
+  murid: string;
+  h: {
+    hal: number;
+    ayat: number;
+  };
+  m: {};
+}
 
-const bot = new Telegraf("6510459338:AAHTHLXxoGCeJjGVm-lzikKn9172AYiAAvM");
+type MyContext = Scenes.WizardContext<MyWizardSession>;
 
-const answerOptions = getAllKelas();
+const scene = new Scenes.WizardScene<MyContext>(
+  "sceneId",
+  async (ctx) => {
+    const answerOptions = getAllKelas();
+    const question = "Pilih Kelas...";
+    await ctx.reply(question, Markup.inlineKeyboard(answerOptions));
+    return ctx.wizard.next();
+  },
+  async (ctx) => {
+    await ctx.reply("Step 2");
+    return ctx.wizard.next();
+  },
+  async (ctx) => {
+    await ctx.reply("Done");
+    return await ctx.scene.leave();
+  }
+);
+const stage = new Scenes.Stage<MyContext>([scene]);
 
-// Command handler example
-bot.command("bismillah", (ctx) => {
-  const question = "Pilih Kelas...";
-  ctx.reply(question, Markup.inlineKeyboard(answerOptions));
-});
+const bot = new Telegraf<MyContext>(process.env.BOT_TOKEN!);
 
-// Handle button clicks
-bot.action(/(.+)/, async (ctx) => {
-  const clickedData = ctx.match[1];
-  const murid = await prisma.murid.findMany({ where: { kelas: clickedData } });
-  ctx.reply(murid[0].namaIndo);
-});
+bot.use(session());
+bot.use(stage.middleware());
 
-// Add more handlers as needed
+bot.command("yaumiyah", async (ctx) => await ctx.scene.enter("sceneId"));
 
-// Launch the bot
 bot.launch();
