@@ -1,15 +1,27 @@
 import { Markup, Scenes, session, Telegraf } from "telegraf";
 import { getAllKelas } from "./lib/kelas";
 
+interface hafalanData {
+  hal: number;
+  ayat: number;
+  surat: string;
+}
 interface MyWizardSession extends Scenes.WizardSessionData {
   // available in scene context under ctx.scene.session.kelas
   kelas: string;
   murid: string;
   h: {
-    hal: number;
-    ayat: number;
+    dari: hafalanData;
+    sampai: hafalanData;
   };
-  m: {};
+  m: {
+    dari: hafalanData;
+    sampai: hafalanData;
+  };
+  mh: {
+    dari: hafalanData;
+    sampai: hafalanData;
+  };
 }
 
 type MyContext = Scenes.WizardContext<MyWizardSession>;
@@ -23,7 +35,7 @@ const scene = new Scenes.WizardScene<MyContext>(
     return ctx.wizard.next();
   },
   async (ctx) => {
-    await ctx.reply("Step 2");
+    console.log();
     return ctx.wizard.next();
   },
   async (ctx) => {
@@ -33,7 +45,9 @@ const scene = new Scenes.WizardScene<MyContext>(
 );
 const stage = new Scenes.Stage<MyContext>([scene]);
 
-const bot = new Telegraf<MyContext>(process.env.BOT_TOKEN!);
+const bot = new Telegraf<MyContext>(
+  "6510459338:AAHTHLXxoGCeJjGVm-lzikKn9172AYiAAvM"
+);
 
 bot.use(session());
 bot.use(stage.middleware());
