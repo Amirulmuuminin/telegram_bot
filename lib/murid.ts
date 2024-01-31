@@ -8,6 +8,6 @@ export const getMuridByKelas = async (kelas: string) => {
   const namaMurid = dataMurid.map((item) => {
     return item.namaIndo;
   });
-  const transfromToMarkup = toMarkupKeyboard(namaMurid);
+  const transfromToMarkup = toMarkupKeyboard(namaMurid, 2);
   return transfromToMarkup;
 };
