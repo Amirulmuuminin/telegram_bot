@@ -1,21 +1,16 @@
-import { Markup, Scenes, session, Telegraf } from "telegraf";
-import { getAllKelas } from "./lib/kelas";
+import { Scenes, session, Telegraf } from "telegraf";
 import { MyContext } from "./lib/extendContext";
 import { pilihMurid } from "./lib/stepHandler/pilihMurid";
+import { pilihKelas } from "./lib/stepHandler/pilihKelas";
+import { endScene } from "./lib/stepHandler/endScene";
+import { pilihInput } from "./lib/stepHandler/pilihInput";
 
 const scene = new Scenes.WizardScene<MyContext>(
   "sibia",
-  async (ctx) => {
-    const answerOptions = getAllKelas();
-    const question = "Pilih Kelas...";
-    await ctx.reply(question, Markup.inlineKeyboard(answerOptions));
-    return ctx.wizard.next();
-  },
+  pilihKelas,
   pilihMurid,
-  async (ctx) => {
-    await ctx.reply("Done");
-    return await ctx.scene.leave();
-  }
+  pilihInput,
+  endScene
 );
 const stage = new Scenes.Stage<MyContext>([scene]);
 

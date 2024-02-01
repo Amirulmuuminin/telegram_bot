@@ -1,13 +1,36 @@
 import { Markup } from "telegraf";
 
-export const toMarkupKeyboard = (data: any[], columns: number) => {
+interface params {
+  columns: number;
+  data?: {
+    nama: string;
+    induk: number;
+  }[];
+  array?: string[];
+}
+
+export const toMarkupKeyboard = ({ columns, data, array }: params) => {
   // Transform the array into the desired shape
   const transformedArray = [];
-  for (let i = 0; i < data.length; i += columns) {
-    const row = data
-      .slice(i, i + columns)
-      .map((name) => Markup.button.callback(name, name));
-    transformedArray.push(row);
+
+  if (!array && data) {
+    for (let i = 0; i < data.length; i += columns) {
+      const row = data
+        .slice(i, i + columns)
+        .map((item) =>
+          Markup.button.callback(item.nama, item.induk.toString())
+        );
+      transformedArray.push(row);
+    }
+  }
+
+  if (array && !data) {
+    for (let i = 0; i < array.length; i += columns) {
+      const row = array
+        .slice(i, i + columns)
+        .map((item) => Markup.button.callback(item, item));
+      transformedArray.push(row);
+    }
   }
 
   return transformedArray;

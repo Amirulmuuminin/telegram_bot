@@ -30,6 +30,6 @@ const kelas = [
 ];
 
 export const getAllKelas = () => {
-  const transfromToMarkup = toMarkupKeyboard(kelas, 4);
+  const transfromToMarkup = toMarkupKeyboard({ columns: 4, array: kelas });
   return transfromToMarkup;
 };
